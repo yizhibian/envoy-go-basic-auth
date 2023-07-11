@@ -3,7 +3,7 @@ build:
 	docker run --rm -v $(PWD):/go/src/go-filter -w /go/src/go-filter \
 		-e GOPROXY=https://goproxy.cn \
 		golang:1.19.8 \
-		go build -v -o libgolang.so -buildmode=c-shared .
+		go build -v -o libgolang.so -buildmode=c-shared -buildvcs=false .
 
 run:
 	docker run --rm -v $(PWD)/envoy.yaml:/etc/envoy/envoy.yaml \
