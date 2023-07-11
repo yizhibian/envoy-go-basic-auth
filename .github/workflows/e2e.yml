@@ -2,7 +2,7 @@ name: e2e
 on: [pull_request, push]
 
 jobs:
-  e2e-bind:
+  e2e-authorized:
     runs-on: ubuntu-latest
     env:
       GODEBUG: cgocheck=0
