@@ -105,19 +105,32 @@ static_resources:
 
 func startEnvoyContainer(users []User) {
 	generateEnvoyConfig(users)
-	cmd := exec.Command("docker", "run", "--rm",
-		"--name", ContainerName,
-		"-v", fmt.Sprintf("%s/envoy.yaml:/etc/envoy/envoy.yaml", getPwd()),
-		"-v", fmt.Sprintf("%s/../libgolang.so:/etc/envoy/libgolang.so", getPwd()),
-		"-p", "10000:10000", "-e", "GODEBUG=cgocheck=0",
-		"envoyproxy/envoy:contrib-v1.26-latest", "envoy", "-c", "/etc/envoy/envoy.yaml")
-
+	//cmd := exec.Command("docker", "run", "--rm",
+	//	"--name", ContainerName,
+	//	"-v", fmt.Sprintf("%s/envoy.yaml:/etc/envoy/envoy.yaml", getPwd()),
+	//	"-v", fmt.Sprintf("%s/../libgolang.so:/etc/envoy/libgolang.so", getPwd()),
+	//	"-p", "10000:10000", "-e", "GODEBUG=cgocheck=0",
+	//	"envoyproxy/envoy:contrib-v1.26-latest", "envoy", "-c", "/etc/envoy/envoy.yaml")
+	//
+	//cmd.Stdout = os.Stdout
+	//cmd.Stderr = os.Stderr
+	//
+	//err := cmd.Run()
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
+	var err error
+	cmd := exec.Command("cat", "envoy.yaml")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
-
-	err := cmd.Run()
+	err = cmd.Start()
 	if err != nil {
-		log.Fatal(err)
+		panic(fmt.Sprintf("failed to cat envoy.yaml: %v", err))
+	}
+
+	err = exec.Command("bash", "-c", "envoy -c envoy.yaml &").Run()
+	if err != nil {
+		panic(fmt.Sprintf("failed to start envoy: %v", err))
 	}
 }
 
